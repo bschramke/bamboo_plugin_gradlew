@@ -5,5 +5,37 @@
 *.war
 *.ear
 
-# Maven stuff #
+# local config files #
+local.properties
+
+# Maven #
 target/
+
+# IntelliJ IDEA #
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Eclipse #
+.project
+.metadata
+.classpath
+.loadpath
+.settings/
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+
+# NetBeans #
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
