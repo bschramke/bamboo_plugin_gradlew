@@ -1,4 +1,4 @@
-package de.schramke.bamboo.plugins.gradlew;
+package de.schramke.bamboo.plugins.gradlew.tasks;
 
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.task.TaskContext;
@@ -15,9 +15,9 @@ public class GradleBuildTask implements TaskType {
     public TaskResult execute(@NotNull TaskContext taskContext) throws TaskException {
         final BuildLogger buildLogger = taskContext.getBuildLogger();
 
-        final String say = taskContext.getConfigurationMap().get("say");
+        final String gradleTask = taskContext.getConfigurationMap().get("gradleTask");
 
-        buildLogger.addBuildLogEntry(say);
+        buildLogger.addBuildLogEntry(gradleTask);
 
         return TaskResultBuilder.newBuilder(taskContext).success().build();
     }
