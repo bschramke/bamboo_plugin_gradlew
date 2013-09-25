@@ -1,8 +1,14 @@
 package de.schramke.bamboo.plugins.gradlew.tasks;
 
+import com.atlassian.bamboo.build.Job;
+import com.atlassian.bamboo.task.TaskConfigConstants;
 import com.atlassian.bamboo.util.TextProviderUtils;
+import com.atlassian.bamboo.v2.build.agent.capability.Requirement;
+import com.atlassian.bamboo.v2.build.agent.capability.RequirementImpl;
+import com.google.common.collect.Sets;
 import com.opensymphony.xwork2.TextProvider;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -13,16 +19,32 @@ import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.atlassian.util.concurrent.Nullable;
 
 import java.util.Map;
+import java.util.Set;
 
 public class GradleTaskConfigurator extends AbstractTaskConfigurator {
 
+    private static final Logger log = Logger.getLogger(GradleTaskConfigurator.class);
+
+    // ------------------------------------------------------------------------------------------------------- Constants
+
+    private static final Set<String> FIELDS_TO_COPY = Sets.newHashSet(
+            GradleBuildTask.LABEL,
+            GradleBuildTask.TASK,
+            GradleBuildTask.ENVIRONMENT,
+            TaskConfigConstants.CFG_WORKING_SUB_DIRECTORY
+    );
+
+    // ------------------------------------------------------------------------------------------------- Type Properties
+    // ---------------------------------------------------------------------------------------------------- Dependencies
+    // ---------------------------------------------------------------------------------------------------- Constructors
+    // ----------------------------------------------------------------------------------------------- Interface Methods
+
     @Override
-    public Map<String, String> generateTaskConfigMap(@NotNull final ActionParametersMap params, @Nullable final TaskDefinition previousTaskDefinition) {
-        final Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
-
-        config.put("gradleTask", params.getString("gradleTask"));
-
-        return config;
+    @NotNull
+    public Set<Requirement> calculateRequirements(@NotNull TaskDefinition taskDefinition, @NotNull Job buildable)
+    {
+        final String label = taskDefinition.getConfiguration().get(GradleBuildTask.LABEL);
+        return Sets.<Requirement>newHashSet(new RequirementImpl(GradleBuildTask.GRADLE_CAPABILITY_PREFIX + "." + label, true, ".*"));
     }
 
     @Override
@@ -38,22 +60,32 @@ public class GradleTaskConfigurator extends AbstractTaskConfigurator {
     }
 
     @Override
+    public Map<String, String> generateTaskConfigMap(@NotNull final ActionParametersMap params, @Nullable final TaskDefinition previousTaskDefinition) {
+
+        final Map<String, String> map = super.generateTaskConfigMap(params, previousTaskDefinition);
+        taskConfiguratorHelper.populateTaskConfigMapWithActionParameters(map, params, FIELDS_TO_COPY);
+        return map;
+
+    }
+
+    @Override
     public void populateContextForCreate(@NotNull final Map<String, Object> context) {
         super.populateContextForCreate(context);
-
     }
 
     @Override
     public void populateContextForEdit(@NotNull final Map<String, Object> context, @NotNull final TaskDefinition taskDefinition) {
         super.populateContextForEdit(context, taskDefinition);
-
-        context.put("gradleTask", taskDefinition.getConfiguration().get("gradleTask"));
+        taskConfiguratorHelper.populateContextWithConfiguration(context, taskDefinition, FIELDS_TO_COPY);
     }
 
     @Override
     public void populateContextForView(@NotNull final Map<String, Object> context, @NotNull final TaskDefinition taskDefinition) {
         super.populateContextForView(context, taskDefinition);
-        context.put("gradleTask", taskDefinition.getConfiguration().get("gradleTask"));
+        taskConfiguratorHelper.populateContextWithConfiguration(context, taskDefinition, FIELDS_TO_COPY);
     }
 
+    // -------------------------------------------------------------------------------------------------- Action Methods
+    // -------------------------------------------------------------------------------------------------- Public Methods
+    // -------------------------------------------------------------------------------------- Basic Accessors / Mutators
 }

@@ -3,7 +3,6 @@
     <plugin-info>
         <description>${project.description}</description>
         <version>${project.version}</version>
-        <application-version min="3.0"/>
         <vendor name="${project.organization.name}" url="${project.organization.url}"/>
         <param name="plugin-icon">images/gradleIcon.png</param>
         <param name="plugin-logo">images/gradleLogo.png</param>
@@ -13,7 +12,7 @@
     </plugin-info>
 
     <!-- add our i18n resource -->
-    <resource type="i18n" name="i18n" location="i18n/english"/>
+    <resource type="i18n" name="Bamboo Gradle Plugin English" location="i18n/english"/>
 
     <!-- add our web resources -->
     <web-resource key="bamboo_plugin_gradlew-resources" name="bamboo_plugin_gradlew Web Resources">
@@ -26,19 +25,22 @@
         <context>bamboo_plugin_gradlew</context>
     </web-resource>
 
-    <taskType name="Gradle 1.x" class="de.schramke.bamboo.plugins.gradlew.tasks.GradleBuildTask"
-              key="task.builder.gradle1">
-        <description>A simple Hello World Task</description>
-        <!-- Categories available in 3.1: "builder", "test" and "deployment" -->
-        <category name="builder"/>
+    <taskType key="gradle" name="Gradle" class="de.schramke.bamboo.plugins.gradlew.tasks.GradleBuildTask">
         <configuration class="de.schramke.bamboo.plugins.gradlew.tasks.GradleTaskConfigurator"/>
 
-        <!--Some magic that makes a list of executables appear in a box on the UI -->
-        <executable key="gradle1" nameKey="builder.gradle1.executableName" pathHelpKey="builder.gradle1.helpPath"
-                    primaryCapabilityProvider="true"/>
+        <!--This detects the gradle installations on the system -->
+        <capabilityDefaultsHelper class="de.schramke.bamboo.plugins.gradlew.GradleCapabilityDefaultsHelper"/>
 
+        <!-- Categories available in 3.1: "builder", "test" and "deployment" -->
+        <category name="builder"/>
+
+        <!--Some magic that makes a list of executables appear in a box on the UI -->
+        <executable key="gradle" pathHelpKey="gradle.pathHelp"/>
+
+        <description>Run Gradle as part of your build</description>
         <resource type="freemarker" name="edit" location="template/editGradleBuildTask.ftl"/>
         <resource type="freemarker" name="view" location="template/viewGradleBuildTask.ftl"/>
+        <help key="gradle.task.help" />
     </taskType>
 
     <!-- import from the product container -->
