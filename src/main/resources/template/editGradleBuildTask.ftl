@@ -1,6 +1,6 @@
 [#-- @ftlvariable name="uiConfigSupport" type="com.atlassian.bamboo.ww2.actions.build.admin.create.UIConfigSupport" --]
 
-[@ww.checkbox labelKey='gradle.wrapper' name='useGradleWrapper' toggle='true'/]
+[@ww.checkbox labelKey='gradle.wrapper' name='useWrapper' toggle='true'/]
 
 [#assign addExecutableLink][@ui.displayAddExecutableInline executableKey='gradle'/][/#assign]
 [@ww.select cssClass="builderSelectWidget" labelKey='executable.type' name='label'
@@ -17,3 +17,5 @@
 
 [@ww.textfield labelKey='builder.common.env' name='environmentVariables' cssClass="long-field" /]
 [@ww.textfield labelKey='builder.common.sub' name='workingSubDirectory' cssClass="long-field" /]
+[@ww.textfield labelKey='gradle.logLevel' name='logLevel' cssClass="long-field" /]
+[@ww.textfield labelKey='gradle.stacktrace' name='stackTraceOutput' cssClass="long-field" /]

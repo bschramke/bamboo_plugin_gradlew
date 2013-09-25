@@ -28,9 +28,13 @@ public class GradleTaskConfigurator extends AbstractTaskConfigurator {
     // ------------------------------------------------------------------------------------------------------- Constants
 
     private static final Set<String> FIELDS_TO_COPY = Sets.newHashSet(
+            GradleBuildTask.USE_WRAPPER,
             GradleBuildTask.LABEL,
             GradleBuildTask.TASK,
             GradleBuildTask.ENVIRONMENT,
+            GradleBuildTask.LOG_LEVEL,
+            GradleBuildTask.STACK_TRACE_OUTPUT,
+            TaskConfigConstants.CFG_JDK_LABEL,
             TaskConfigConstants.CFG_WORKING_SUB_DIRECTORY
     );
 

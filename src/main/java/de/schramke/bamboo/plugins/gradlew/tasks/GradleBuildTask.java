@@ -25,10 +25,12 @@ public class GradleBuildTask implements TaskType {
     // ------------------------------------------------------------------------------------------------- Type Properties
 
     public static final String GRADLE_CAPABILITY_PREFIX = CapabilityDefaultsHelper.CAPABILITY_BUILDER_PREFIX + ".gradle";
-    public static final String ENVIRONMENT = "environmentVariables";
     public static final String LABEL = "label";
+    public static final String USE_WRAPPER = "useWrapper";
     public static final String TASK = "gradleTask";
-
+    public static final String ENVIRONMENT = "environmentVariables";
+    public static final String LOG_LEVEL = "logLevel";
+    public static final String STACK_TRACE_OUTPUT = "stackTraceOutput";
     // ---------------------------------------------------------------------------------------------------- Dependencies
     private final EnvironmentVariableAccessor environmentVariableAccessor;
     private final CapabilityContext capabilityContext;
