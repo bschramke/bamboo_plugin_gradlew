@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-
 import com.atlassian.bamboo.collections.ActionParametersMap;
 import com.atlassian.bamboo.task.AbstractTaskConfigurator;
 import com.atlassian.bamboo.task.TaskDefinition;
@@ -45,8 +44,7 @@ public class GradleTaskConfigurator extends AbstractTaskConfigurator {
 
     @Override
     @NotNull
-    public Set<Requirement> calculateRequirements(@NotNull TaskDefinition taskDefinition, @NotNull Job buildable)
-    {
+    public Set<Requirement> calculateRequirements(@NotNull TaskDefinition taskDefinition, @NotNull Job buildable) {
         final String label = taskDefinition.getConfiguration().get(GradleBuildTask.LABEL);
         return Sets.<Requirement>newHashSet(new RequirementImpl(GradleBuildTask.GRADLE_CAPABILITY_PREFIX + "." + label, true, ".*"));
     }
@@ -59,7 +57,7 @@ public class GradleTaskConfigurator extends AbstractTaskConfigurator {
 
         final String gradleTaskValue = params.getString("gradleTask");
         if (StringUtils.isEmpty(gradleTaskValue)) {
-            errorCollection.addError("gradleTask", textprovider.getText("builder.gradle.task.error"));
+            errorCollection.addError("gradleTask", textprovider.getText("gradle.task.error"));
         }
     }
 
@@ -75,6 +73,8 @@ public class GradleTaskConfigurator extends AbstractTaskConfigurator {
     @Override
     public void populateContextForCreate(@NotNull final Map<String, Object> context) {
         super.populateContextForCreate(context);
+        context.put("useWrapper", true);
+        context.put("gradleTask", "build");
     }
 
     @Override

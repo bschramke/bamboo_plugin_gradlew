@@ -1,7 +1,7 @@
-Gradle Plugin for Atlassian Bamboo
+#Gradle Plugin for Atlassian Bamboo
 =====================
 
-This plugin extends Atlassian Bamboo with the possibility to run gradle tasks.
+This plugin allows you to run gradle tasks during a build in Bamboo.
 
 ## License
 Copyright 2013 Björn Schramke

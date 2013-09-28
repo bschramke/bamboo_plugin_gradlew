@@ -3,6 +3,8 @@ package de.schramke.bamboo.plugins.gradlew.tasks;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
 import com.atlassian.bamboo.process.EnvironmentVariableAccessor;
+//import com.atlassian.bamboo.process.ExternalProcessBuilder;
+import com.atlassian.bamboo.process.ProcessService;
 import com.atlassian.bamboo.task.TaskContext;
 import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.task.TaskException;
@@ -11,12 +13,19 @@ import com.atlassian.bamboo.task.TaskType;
 import com.atlassian.bamboo.v2.build.CurrentBuildResult;
 import com.atlassian.bamboo.v2.build.agent.capability.CapabilityContext;
 import com.atlassian.bamboo.v2.build.agent.capability.CapabilityDefaultsHelper;
+import com.atlassian.utils.process.ExternalProcess;
+import com.atlassian.utils.process.ExternalProcessBuilder;
+import com.atlassian.utils.process.StringProcessHandler;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import de.schramke.bamboo.plugins.gradlew.GradlewExtractor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class GradleBuildTask implements TaskType {
@@ -31,12 +40,15 @@ public class GradleBuildTask implements TaskType {
     public static final String ENVIRONMENT = "environmentVariables";
     public static final String LOG_LEVEL = "logLevel";
     public static final String STACK_TRACE_OUTPUT = "stackTraceOutput";
+
     // ---------------------------------------------------------------------------------------------------- Dependencies
+    private final ProcessService processService;
     private final EnvironmentVariableAccessor environmentVariableAccessor;
     private final CapabilityContext capabilityContext;
 
     // ---------------------------------------------------------------------------------------------------- Constructors
-    public GradleBuildTask(EnvironmentVariableAccessor environmentVariableAccessor, CapabilityContext capabilityContext) {
+    public GradleBuildTask(final ProcessService processService, EnvironmentVariableAccessor environmentVariableAccessor, CapabilityContext capabilityContext) {
+        this.processService = processService;
         this.environmentVariableAccessor = environmentVariableAccessor;
         this.capabilityContext = capabilityContext;
     }
@@ -47,27 +59,42 @@ public class GradleBuildTask implements TaskType {
     public TaskResult execute(@NotNull TaskContext taskContext) throws TaskException {
         final BuildLogger buildLogger = taskContext.getBuildLogger();
         final CurrentBuildResult currentBuildResult = taskContext.getBuildContext().getBuildResult();
+        TaskResultBuilder builder = TaskResultBuilder.newBuilder(taskContext);
 
-        final String gradleTask = taskContext.getConfigurationMap().get("gradleTask");
-
-        buildLogger.addBuildLogEntry(gradleTask);
-
-        try{
+        try {
             final ConfigurationMap configuration = taskContext.getConfigurationMap();
+            final Map<String, String> environment = getEnvironment(taskContext);
 
-            final String label = configuration.get(LABEL);
-            Preconditions.checkNotNull(label);
 
-            return TaskResultBuilder.newBuilder(taskContext).success().build();
+            final String gradleTask = configuration.get("gradleTask");
+            Preconditions.checkNotNull(gradleTask);
 
-        }finally {
+            final File workingDirectory = taskContext.getWorkingDirectory();
+
+            buildLogger.addBuildLogEntry(workingDirectory.getAbsolutePath());
+            final String runnerPath = GradlewExtractor.getDevenvRunnerPath(workingDirectory.getAbsolutePath());
+            buildLogger.addBuildLogEntry(runnerPath);
+
+            final List<String> command = Lists.newArrayList(runnerPath, "tasks");
+
+            final StringProcessHandler processHandler = new StringProcessHandler();
+            final ExternalProcess process = new ExternalProcessBuilder()
+                    .command(command, workingDirectory)
+                    .handler(processHandler)
+                    .env(environment).build();
+
+            process.execute();
+            buildLogger.addBuildLogEntry(processHandler.getOutput());
+
+            return builder.checkReturnCode(process, 0).build();
+
+        } finally {
             currentBuildResult.addBuildErrors(Lists.newArrayList("Irgendwas lief hier falsch"));
         }
 
     }
 
-    private Map<String, String> getEnvironment(final TaskContext taskContext)
-    {
+    private Map<String, String> getEnvironment(final TaskContext taskContext) {
         final String environment = taskContext.getConfigurationMap().get(ENVIRONMENT);
         return environmentVariableAccessor.splitEnvironmentAssignments(environment);
     }
@@ -75,4 +102,5 @@ public class GradleBuildTask implements TaskType {
     // -------------------------------------------------------------------------------------------------- Action Methods
     // -------------------------------------------------------------------------------------------------- Public Methods
     // -------------------------------------------------------------------------------------- Basic Accessors / Mutators
+
 }
