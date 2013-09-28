@@ -72,7 +72,7 @@ public class GradleBuildTask implements TaskType {
             final File workingDirectory = taskContext.getWorkingDirectory();
 
             buildLogger.addBuildLogEntry(workingDirectory.getAbsolutePath());
-            final String runnerPath = GradlewExtractor.getDevenvRunnerPath(workingDirectory.getAbsolutePath());
+            final String runnerPath = GradlewExtractor.getGradlewPath(workingDirectory.getAbsolutePath());
             buildLogger.addBuildLogEntry(runnerPath);
 
             final List<String> command = Lists.newArrayList(runnerPath, "tasks");
