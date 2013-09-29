@@ -22,3 +22,7 @@ limitations under the License.
 
 * [bamboo](http://www.atlassian.com/software/bamboo/overview)
 * [gradle](http://www.gradle.org/overview)
+
+## Changelog
+
+v0.1 initial development; Implements the possibility for starting of gradle tasks during a Bamboo build
