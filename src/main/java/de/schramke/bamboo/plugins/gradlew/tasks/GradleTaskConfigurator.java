@@ -1,21 +1,19 @@
 package de.schramke.bamboo.plugins.gradlew.tasks;
 
 import com.atlassian.bamboo.build.Job;
+import com.atlassian.bamboo.collections.ActionParametersMap;
+import com.atlassian.bamboo.task.AbstractTaskConfigurator;
 import com.atlassian.bamboo.task.TaskConfigConstants;
-import com.atlassian.bamboo.util.TextProviderUtils;
+import com.atlassian.bamboo.task.TaskDefinition;
+import com.atlassian.bamboo.utils.error.ErrorCollection;
+import com.atlassian.bamboo.utils.i18n.I18nBean;
 import com.atlassian.bamboo.v2.build.agent.capability.Requirement;
 import com.atlassian.bamboo.v2.build.agent.capability.RequirementImpl;
+import com.atlassian.util.concurrent.Nullable;
 import com.google.common.collect.Sets;
-import com.opensymphony.xwork2.TextProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-
-import com.atlassian.bamboo.collections.ActionParametersMap;
-import com.atlassian.bamboo.task.AbstractTaskConfigurator;
-import com.atlassian.bamboo.task.TaskDefinition;
-import com.atlassian.bamboo.utils.error.ErrorCollection;
-import com.atlassian.util.concurrent.Nullable;
 
 import java.util.Map;
 import java.util.Set;
@@ -53,11 +51,13 @@ public class GradleTaskConfigurator extends AbstractTaskConfigurator {
     public void validate(@NotNull final ActionParametersMap params, @NotNull final ErrorCollection errorCollection) {
         super.validate(params, errorCollection);
 
-        TextProvider textprovider = TextProviderUtils.getTextProvider();
+//        TextProvider textprovider = TextProviderUtils.getTextProvider();
+        I18nBean i18nBean = this.getI18nBean();
 
         final String gradleTaskValue = params.getString("gradleTask");
         if (StringUtils.isEmpty(gradleTaskValue)) {
-            errorCollection.addError("gradleTask", textprovider.getText("gradle.task.error"));
+//            errorCollection.addError("gradleTask", textprovider.getText("gradle.task.error"));
+            errorCollection.addError("gradleTask", i18nBean.getText("gradle.task.error"));
         }
     }
 
