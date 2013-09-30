@@ -3,30 +3,27 @@ package de.schramke.bamboo.plugins.gradlew.tasks;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
 import com.atlassian.bamboo.process.EnvironmentVariableAccessor;
-//import com.atlassian.bamboo.process.ExternalProcessBuilder;
 import com.atlassian.bamboo.process.ProcessService;
-import com.atlassian.bamboo.task.TaskContext;
-import com.atlassian.bamboo.task.TaskResultBuilder;
-import com.atlassian.bamboo.task.TaskException;
-import com.atlassian.bamboo.task.TaskResult;
-import com.atlassian.bamboo.task.TaskType;
+import com.atlassian.bamboo.task.*;
 import com.atlassian.bamboo.v2.build.CurrentBuildResult;
 import com.atlassian.bamboo.v2.build.agent.capability.CapabilityContext;
 import com.atlassian.bamboo.v2.build.agent.capability.CapabilityDefaultsHelper;
 import com.atlassian.utils.process.ExternalProcess;
 import com.atlassian.utils.process.ExternalProcessBuilder;
-import com.atlassian.utils.process.StringProcessHandler;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import de.schramke.bamboo.plugins.gradlew.GradlewExtractor;
+import de.schramke.bamboo.plugins.gradlew.LoggingProcessHandler;
+import de.schramke.bamboo.plugins.gradlew.LoggingProcessMonitor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+//import com.atlassian.bamboo.process.ExternalProcessBuilder;
 
 public class GradleBuildTask implements TaskType {
     private static final Logger log = LoggerFactory.getLogger(GradleBuildTask.class);
@@ -77,14 +74,15 @@ public class GradleBuildTask implements TaskType {
 
             final List<String> command = Lists.newArrayList(runnerPath, "tasks");
 
-            final StringProcessHandler processHandler = new StringProcessHandler();
+            final LoggingProcessHandler processHandler = new LoggingProcessHandler(buildLogger);
             final ExternalProcess process = new ExternalProcessBuilder()
                     .command(command, workingDirectory)
                     .handler(processHandler)
+                    .addMonitor(new LoggingProcessMonitor(buildLogger))
                     .env(environment).build();
 
             process.execute();
-            buildLogger.addBuildLogEntry(processHandler.getOutput());
+//            buildLogger.addBuildLogEntry(processHandler.getOutput());
 
             return builder.checkReturnCode(process, 0).build();
 
